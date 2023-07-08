@@ -8,7 +8,7 @@ const Navbar = () => {
         className="fixed z-3 w-[18rem] lg:relative lg:flex bg-gray-100 lg:bg-transparent"
       >
         <ul className="[&>li>a>h3]:text-gray-900 [&>li>a]:flex [&>li>a]:gap-4 [&>li>a]:py-3 [&>li>a]:pl-3 ">
-          <li>
+          {/* <li>
             <NavLink to="/" className="flex gap-4 ">
               <svg
                 className=" fill-slate-700 dark:fill-white"
@@ -25,7 +25,7 @@ const Navbar = () => {
               </svg>
               <h3 className=" text-xl hover:text-blue-300">Panel</h3>
             </NavLink>
-          </li>
+          </li> */}
           <li>
             <NavLink
               to="/participantes"
