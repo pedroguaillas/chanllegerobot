@@ -1,52 +1,40 @@
-import React from 'react';
-import createParticipants from '../../functions/createParticipants';
-import uploadImage from '../../functions/uploadImage';
+import React, { useEffect, useState } from 'react';
+import editPart from '../../functions/editParticipant';
+import IParticipant from '../../types';
 
 interface Props {
+  participant: IParticipant;
   refresh: () => void;
 }
 
-function ModalForm({ refresh }: Props) {
+function ModalFormEdit({ participant, refresh }: Props) {
 
-  const submit = async e => {
+  const [editParticipant, setEditParticipant] = useState({ ...participant });
+
+  const onChange = e => {
+    setEditParticipant({
+      ...editParticipant,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const submit = e => {
     e.preventDefault();
 
-    const name = e.target.name.value;
-    const robot = e.target.robot.value;
-    const image = e.target.image.files[0];
-
-    const url = await uploadImage(image);
-
-    createParticipants({ name, robot, url })
+    editPart(participant.id, editParticipant)
       .then(() => {
-
         refresh();
-
-        const modalForm = document.querySelector('#modal-form') as HTMLDialogElement;
-        modalForm?.close();
-
-        e.target.name.value = '';
-        e.target.robot.value = '';
-        e.target.image.value = null;
+        const modalForm = document.querySelector('#modal-edit') as HTMLDialogElement;
+        modalForm.close();
       })
   }
 
   return (
     <>
-      <button
-        className="bg-blue-500 text-white active:bg-blue-600 font-bold text-sm px-5 py-2 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-        type="button"
-        onClick={() => {
-          const modalForm = document.querySelector('#modal-form') as HTMLDialogElement;
-          modalForm?.showModal();
-        }}
-      >
-        Registrar
-      </button>
-      <dialog id="modal-form" className='rounded'>
+      <dialog id="modal-edit" className='rounded'>
         {/* Header modal */}
         <div className="flex items-start justify-between p-2 border-b border-solid border-slate-200 rounded-t">
-          <h4 className="text-2xl font-semibold text-center">Registro de participante</h4>
+          <h4 className="text-2xl font-semibold text-center">Editar participante</h4>
         </div>
         {/* Content modal */}
         <form onSubmit={submit} className='my-2'>
@@ -60,7 +48,10 @@ function ModalForm({ refresh }: Props) {
               </label>
               <div className="mb-3 pt-0">
                 <input
+                  value={editParticipant.name}
+                  onChange={onChange}
                   type="text"
+                  name='name'
                   id='name'
                   className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -75,7 +66,10 @@ function ModalForm({ refresh }: Props) {
               </label>
               <div className="mb-3 pt-0">
                 <input
+                  value={editParticipant.robot}
+                  onChange={onChange}
                   type="text"
+                  name='robot'
                   id='robot'
                   className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -94,6 +88,7 @@ function ModalForm({ refresh }: Props) {
                   id='image'
                   className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
+                <img className='max-w-[200px] mx-auto my-2' src={participant.url} />
               </div>
             </div>
           </div>
@@ -123,4 +118,4 @@ function ModalForm({ refresh }: Props) {
 
 }
 
-export default ModalForm;
+export default ModalFormEdit;

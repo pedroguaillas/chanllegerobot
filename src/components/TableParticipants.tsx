@@ -1,15 +1,45 @@
-import React from 'react';
-import { Nad, IParticipants } from '../types';
+import React, { useState } from 'react';
+import IParticipant, { Nad, IParticipants } from '../types';
+import ModalDialogDelete from './Layout/ModalDialogDelete';
+import deleteParticipant from '../functions/deleteParticipant';
 
 interface Props {
   nad: Nad;
   participants: IParticipants;
+  refresh?: () => void;
+  setParticipantEdit?: (IParticipant) => void;
 }
 
-const TableParticipants = ({ nad, participants }: Props) => {
+const TableParticipants = ({ nad, participants, refresh = undefined, setParticipantEdit = undefined }: Props) => {
+
+  const [deleteId, setDeleteId] = useState('');
+
+  const showDialogDelete = id => {
+    setDeleteId(id);
+    const modalForm = document.querySelector('#confirmation-delete') as HTMLDialogElement;
+    modalForm.showModal();
+  }
+
+  const confirm = () => {
+    deleteParticipant(deleteId)
+      .then(() => {
+        refresh !== undefined ? refresh() : null
+
+        const modalForm = document.querySelector('#confirmation-delete') as HTMLDialogElement;
+        modalForm.close();
+      })
+  }
+
+  const showModalEdit = participant => {
+    setParticipantEdit !== undefined ? setParticipantEdit(participant) : null
+
+    const modalEdit = document.querySelector('#modal-edit') as HTMLDialogElement;
+    modalEdit.showModal();
+  }
 
   return (
     <>
+      <ModalDialogDelete confirm={confirm} />
       <div className=" mt-4 p-4 bg-white rounded-[1.5rem] shadow-lg">
         <table className="w-[100%] text-center ">
           <thead>
@@ -35,7 +65,9 @@ const TableParticipants = ({ nad, participants }: Props) => {
                 <td className=' text-right'>
                   {nad === 'Participantes' && (
                     <>
-                      <button className=" bg-blue-500 p-1 rounded mr-1 ">
+                      <button
+                        onClick={() => showModalEdit(participant)}
+                        className=" bg-blue-500 p-1 rounded mr-1">
                         <span>
                           <svg
                             fill="#fff"
@@ -52,7 +84,9 @@ const TableParticipants = ({ nad, participants }: Props) => {
                           </svg>
                         </span>
                       </button>
-                      <button className=" bg-red-700 p-1 rounded mr-1 ">
+                      <button
+                        onClick={() => showDialogDelete(participant.id)}
+                        className="bg-red-700 p-1 rounded mr-1">
                         <span>
                           <svg
                             fill="#fff"
